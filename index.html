@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>QuikBooking — Pour tout professionnel</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;600;700&display=swap');
+:root{--bg:#080b14;--surface:#0e1420;--surface2:#141b2d;--border:#1e2a42;--accent:#0078d4;--accent2:#50e6ff;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--text:#f1f5f9;--muted:#64748b}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Inter',sans-serif;background:#1a1a2e;color:var(--text);display:flex;align-items:center;justify-content:center}
+body[dir="rtl"]{font-family:'Noto Sans Arabic','Inter',sans-serif}
+
+/* PHONE FRAME */
+.phone{width:390px;height:844px;background:var(--bg);border-radius:48px;border:8px solid #2a2a3a;box-shadow:0 0 0 2px #444,0 30px 80px rgba(0,0,0,0.8);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:130px;height:34px;background:#2a2a3a;border-radius:0 0 20px 20px;z-index:100;display:flex;align-items:center;justify-content:center;gap:8px}
+.notch-cam{width:12px;height:12px;background:#111;border-radius:50%;border:2px solid #333}
+.notch-speaker{width:50px;height:5px;background:#111;border-radius:3px}
+.status-bar{padding:10px 24px 4px;display:flex;justify-content:space-between;align-items:center;font-size:0.72rem;font-weight:700;margin-top:34px;flex-shrink:0}
+.status-time{font-size:0.88rem;font-weight:800}
+
+/* APP HEADER */
+.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.app-avatar{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.app-title{font-size:0.95rem;font-weight:800}
+.app-subtitle{font-size:0.7rem;color:var(--muted);display:flex;align-items:center;gap:4px}
+.dot-online{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.icon-btn{width:34px;height:34px;background:var(--surface2);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.85rem}
+
+/* LANG BAR */
+.lang-bar{background:var(--surface);padding:7px 10px;display:flex;gap:5px;overflow-x:auto;flex-shrink:0;border-bottom:1px solid var(--border);scrollbar-width:none}
+.lang-bar::-webkit-scrollbar{display:none}
+.lang-pill{background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--muted);cursor:pointer;font-size:0.7rem;font-weight:600;padding:4px 9px;white-space:nowrap;flex-shrink:0;transition:all 0.15s}
+.lang-pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* MESSAGES */
+.messages{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.messages::-webkit-scrollbar{display:none}
+.msg{display:flex;gap:8px;align-items:flex-end;animation:fadeUp 0.2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg.user{flex-direction:row-reverse}
+.msg-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;background:var(--surface2);border:1px solid var(--border)}
+.msg.bot .msg-av{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.bubble{max-width:80%;padding:10px 13px;border-radius:18px;font-size:0.88rem;line-height:1.55}
+.msg.bot .bubble{background:var(--surface2);border:1px solid var(--border);border-bottom-left-radius:4px}
+.msg.user .bubble{background:linear-gradient(135deg,var(--accent),#005fa3);color:#fff;border-bottom-right-radius:4px}
+
+/* QUICK REPLIES */
+.quick-replies{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.qr-btn{background:var(--surface);border:1px solid var(--accent);border-radius:18px;color:var(--accent2);cursor:pointer;font-size:0.8rem;font-weight:500;padding:7px 12px;transition:all 0.15s}
+.qr-btn:active{background:var(--accent);color:#fff;transform:scale(0.96)}
+
+/* CUSTOM SERVICE INPUT */
+.custom-service-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:8px}
+.custom-service-box input{background:var(--surface2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:inherit;font-size:0.85rem;padding:9px 12px;width:100%;margin-bottom:8px}
+.custom-service-box input:focus{outline:none;border-color:var(--accent)}
+.custom-service-box button{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:9px;color:#fff;cursor:pointer;font-family:inherit;font-size:0.82rem;font-weight:700;padding:8px 16px;width:100%}
+
+/* SLOTS */
+.slots{display:flex;flex-direction:column;gap:7px;margin-top:8px}
+.slot-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 13px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:0.85rem;transition:all 0.15s}
+.slot-card:active{border-color:var(--accent);transform:scale(0.98)}
+.slot-time{font-weight:700;color:var(--accent2)}
+.slot-date{color:var(--muted);font-size:0.77rem}
+.slot-badge{background:rgba(0,120,212,0.15);color:var(--accent2);border-radius:6px;font-size:0.72rem;font-weight:600;padding:3px 8px}
+
+/* CONFIRM */
+.confirm-card{background:var(--surface2);border:1px solid var(--green);border-radius:14px;padding:13px;margin-top:8px}
+.confirm-title{color:var(--green);font-weight:700;font-size:0.88rem;margin-bottom:8px}
+.confirm-row{display:flex;justify-content:space-between;font-size:0.82rem;padding:4px 0;border-bottom:1px solid var(--border)}
+.confirm-row:last-child{border-bottom:none}
+.confirm-row span:first-child{color:var(--muted)}
+.confirm-row span:last-child{font-weight:600}
+
+/* TYPING */
+.typing{display:flex;align-items:center;gap:4px;padding:10px 13px}
+.typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.2s infinite}
+.typing span:nth-child(2){animation-delay:0.2s}
+.typing span:nth-child(3){animation-delay:0.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+/* INPUT */
+.input-bar{padding:10px 12px 16px;background:var(--surface);border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-shrink:0}
+.chat-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:22px;color:var(--text);font-family:inherit;font-size:0.9rem;padding:10px 16px;resize:none;max-height:80px;transition:border 0.2s;-webkit-appearance:none}
+.chat-input:focus{outline:none;border-color:var(--accent)}
+.send-btn{width:42px;height:42px;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:50%;color:#fff;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:transform 0.1s}
+.send-btn:active{transform:scale(0.92)}
+.send-btn:disabled{opacity:0.4}
+
+/* CONFIG MODAL */
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:flex-end;z-index:200;transition:opacity 0.2s}
+.modal-overlay.hidden{display:none}
+.modal-sheet{background:var(--surface);border-radius:24px 24px 0 0;padding:20px 20px 30px;width:100%;border-top:1px solid var(--border)}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:1rem;font-weight:800;margin-bottom:14px}
+.modal-field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.modal-field label{font-size:0.75rem;color:var(--muted);font-weight:600}
+.modal-field input{background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:0.88rem;padding:10px 14px;font-family:monospace;width:100%;-webkit-appearance:none}
+.modal-field input:focus{outline:none;border-color:var(--accent)}
+.modal-btn{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:14px;color:#fff;font-size:0.95rem;font-weight:700;padding:14px;cursor:pointer;margin-top:4px}
+.modal-status{text-align:center;font-size:0.8rem;margin-top:8px;min-height:20px}
+.modal-status.ok{color:var(--green)}
+.modal-status.err{color:var(--red)}
+
+.toast{position:absolute;top:60px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--surface2);border:1px solid var(--green);border-radius:20px;color:var(--text);font-size:0.8rem;padding:10px 16px;white-space:nowrap;opacity:0;transition:all 0.3s;z-index:300;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="notch"><div class="notch-speaker"></div><div class="notch-cam"></div></div>
+  <div class="toast" id="toast"></div>
+  <div class="status-bar">
+    <span class="status-time" id="clock">9:41</span>
+    <div style="display:flex;align-items:center;gap:5px;font-size:0.7rem"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
+  </div>
+  <div class="app-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="app-avatar" id="appAvatar">⚡</div>
+      <div>
+        <div class="app-title" id="appTitle">QuikBooking</div>
+        <div class="app-subtitle"><span class="dot-online"></span><span id="appSub">Assistant IA · En ligne</span></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <div class="icon-btn" onclick="toggleModal()">⚙️</div>
+    </div>
+  </div>
+  <div class="lang-bar">
+    <div class="lang-pill active" onclick="setLang('fr')">🇫🇷 FR</div>
+    <div class="lang-pill" onclick="setLang('en')">🇬🇧 EN</div>
+    <div class="lang-pill" onclick="setLang('es')">🇪🇸 ES</div>
+    <div class="lang-pill" onclick="setLang('ar')">🇸🇦 AR</div>
+    <div class="lang-pill" onclick="setLang('pt')">🇧🇷 PT</div>
+    <div class="lang-pill" onclick="setLang('zh')">🇨🇳 ZH</div>
+    <div class="lang-pill" onclick="setLang('de')">🇩🇪 DE</div>
+    <div class="lang-pill" onclick="setLang('hi')">🇮🇳 HI</div>
+  </div>
+  <div class="messages" id="messages"></div>
+  <div class="input-bar">
+    <textarea class="chat-input" id="chatInput" rows="1" placeholder="Message..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+  </div>
+  <div class="modal-overlay hidden" id="modalOverlay" onclick="closeModalOutside(event)">
+    <div class="modal-sheet" style="max-height:90vh;overflow-y:auto">
+      <div class="modal-handle"></div>
+
+      <!-- TABS -->
+      <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:10px">
+        <button class="cfg-tab active" onclick="showCfgTab('perso')" id="tab-perso" style="background:var(--accent);border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:inherit;font-size:0.78rem;font-weight:700;padding:6px 12px">🎨 Personnalisation</button>
+        <button class="cfg-tab" onclick="showCfgTab('azure')" id="tab-azure" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-family:inherit;font-size:0.78rem;font-weight:700;padding:6px 12px">☁️ Azure IA</button>
+      </div>
+
+      <!-- PERSONNALISATION TAB -->
+      <div id="cfg-perso">
+        <div class="modal-field">
+          <label>🏢 Nom du business</label>
+          <input type="text" id="cfgBizName" placeholder="Ex: Plomberie Dupont, Salon Marie...">
+        </div>
+        <div class="modal-field">
+          <label>💬 Slogan / Tagline</label>
+          <input type="text" id="cfgSlogan" placeholder="Ex: Disponible 24h/7j pour vous servir">
+        </div>
+        <div class="modal-field">
+          <label>🤖 Emoji / Avatar du bot</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+            <span class="emoji-opt active-emoji" onclick="selectEmoji(this,'⚡')" style="background:var(--accent);border-radius:8px;cursor:pointer;font-size:1.4rem;padding:6px 10px">⚡</span>
+            <span class="emoji-opt" onclick="selectEmoji(this,'🔧')" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.4rem;padding:6px 10px">🔧</span>
+            <span class="emoji-opt" onclick="selectEmoji(this,'💇')" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.4rem;padding:6px 10px">💇</span>
+            <span class="emoji-opt" onclick="selectEmoji(this,'🌿')" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.4rem;padding:6px 10px">🌿</span>
+            <span class="emoji-opt" onclick="selectEmoji(this,'📸')" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.4rem;padding:6px 10px">📸</span>
+            <span class="emoji-opt" onclick="selectEmoji(this,'🏋️')" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.4rem;padding:6px 10px">🏋️</span>
+            <span class="emoji-opt" onclick="selectEmoji(this,'🦷')" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.4rem;padding:6px 10px">🦷</span>
+            <span class="emoji-opt" onclick="selectEmoji(this,'🚗')" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.4rem;padding:6px 10px">🚗</span>
+            <span class="emoji-opt" onclick="selectEmoji(this,'⭐')" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.4rem;padding:6px 10px">⭐</span>
+            <span class="emoji-opt" onclick="selectEmoji(this,'🏠')" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:1.4rem;padding:6px 10px">🏠</span>
+          </div>
+        </div>
+        <div class="modal-field">
+          <label>🎨 Couleur principale</label>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px">
+            <span class="color-opt" onclick="selectColor(this,'#0078d4')" style="background:#0078d4;border:3px solid #fff;border-radius:50%;cursor:pointer;display:inline-block;height:28px;width:28px"></span>
+            <span class="color-opt" onclick="selectColor(this,'#10b981')" style="background:#10b981;border:3px solid transparent;border-radius:50%;cursor:pointer;display:inline-block;height:28px;width:28px"></span>
+            <span class="color-opt" onclick="selectColor(this,'#8b5cf6')" style="background:#8b5cf6;border:3px solid transparent;border-radius:50%;cursor:pointer;display:inline-block;height:28px;width:28px"></span>
+            <span class="color-opt" onclick="selectColor(this,'#f59e0b')" style="background:#f59e0b;border:3px solid transparent;border-radius:50%;cursor:pointer;display:inline-block;height:28px;width:28px"></span>
+            <span class="color-opt" onclick="selectColor(this,'#ef4444')" style="background:#ef4444;border:3px solid transparent;border-radius:50%;cursor:pointer;display:inline-block;height:28px;width:28px"></span>
+            <span class="color-opt" onclick="selectColor(this,'#ec4899')" style="background:#ec4899;border:3px solid transparent;border-radius:50%;cursor:pointer;display:inline-block;height:28px;width:28px"></span>
+            <input type="color" id="customColor" value="#0078d4" onchange="selectColor(null,this.value)" style="border:none;border-radius:8px;cursor:pointer;height:28px;padding:0;width:34px">
+          </div>
+        </div>
+        <div class="modal-field">
+          <label>💬 Message d'accueil personnalisé</label>
+          <textarea id="cfgWelcome" rows="3" style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:inherit;font-size:0.85rem;padding:9px 12px;width:100%;resize:none" placeholder="Ex: Bonjour! Je suis disponible 24h/7j pour vos urgences..."></textarea>
+        </div>
+        <div class="modal-field">
+          <label>🌍 Langue principale</label>
+          <select id="cfgLang" style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:inherit;font-size:0.85rem;padding:9px 12px;width:100%">
+            <option value="fr">🇫🇷 Français</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="pt">🇧🇷 Português</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="hi">🇮🇳 हिन्दी</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>🌐 Langue secondaire (auto-détection)</label>
+          <select id="cfgLang2" style="background:var(--surface2);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:inherit;font-size:0.85rem;padding:9px 12px;width:100%">
+            <option value="">Aucune — auto seulement</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="pt">🇧🇷 Português</option>
+            <option value="zh">🇨🇳 中文</option>
+          </select>
+        </div>
+        <button class="modal-btn" onclick="savePerso()">✅ Appliquer la personnalisation</button>
+      </div>
+
+      <!-- AZURE TAB -->
+      <div id="cfg-azure" style="display:none">
+        <div class="modal-field">
+          <label>🔑 Azure API Key</label>
+          <input type="password" id="cfgKey" placeholder="7XsfGU1dZtmDuO4Fipzx9UZC8mGLVzi3PCBfaNholyh5yKPwX4YjJQQJ99CFACREanaXJ3w3AAABACOGser6">
+        </div>
+        <div class="modal-field">
+          <label>🌐 Endpoint Azure</label>
+          <input type="text" id="cfgEndpoint" placeholder="https://bookbot-openai.openai.azure.com/">
+        </div>
+        <div class="modal-field">
+          <label>🤖 Modèle</label>
+          <input type="text" id="cfgModel" value="gpt-5.4-mini">
+        </div>
+        <button class="modal-btn" onclick="saveConfig()">☁️ Connecter Azure</button>
+        <div class="modal-status" id="modalStatus"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══ CONFIG ═══
+// ═══ AZURE CONFIG — remplace par tes vraies valeurs ═══
+var AZURE_KEY = '7XsfGU1dZtmDuO4Fipzx9UZC8mGLVzi3PCBfaNholyh5yKPwX4YjJQQJ99CFACREanaXJ3w3AAABACOGser6';
+var AZURE_ENDPOINT = 'https://bookbot-openai.openai.azure.com';
+var AZURE_MODEL = 'gpt-5.4-mini';
+var BIZ_NAME = 'QuikBooking';
+var BIZ_SERVICES = [];
+var azureOK = (AZURE_KEY !== 'METS_TA_CLE_ICI' && AZURE_KEY !== '');
+
+function toggleModal(){document.getElementById('modalOverlay').classList.toggle('hidden');}
+function closeModalOutside(e){if(e.target===document.getElementById('modalOverlay'))toggleModal();}
+// CFG TABS
+function showCfgTab(tab){
+  document.getElementById('cfg-perso').style.display = tab==='perso' ? 'block' : 'none';
+  document.getElementById('cfg-azure').style.display = tab==='azure' ? 'block' : 'none';
+  document.getElementById('tab-perso').style.background = tab==='perso' ? 'var(--accent)' : 'var(--surface2)';
+  document.getElementById('tab-perso').style.color = tab==='perso' ? '#fff' : 'var(--muted)';
+  document.getElementById('tab-perso').style.border = tab==='perso' ? 'none' : '1px solid var(--border)';
+  document.getElementById('tab-azure').style.background = tab==='azure' ? 'var(--accent)' : 'var(--surface2)';
+  document.getElementById('tab-azure').style.color = tab==='azure' ? '#fff' : 'var(--muted)';
+  document.getElementById('tab-azure').style.border = tab==='azure' ? 'none' : '1px solid var(--border)';
+}
+
+// EMOJI SELECTOR
+var selectedEmoji = '⚡';
+function selectEmoji(el, emoji){
+  selectedEmoji = emoji;
+  document.querySelectorAll('.emoji-opt').forEach(function(e){
+    e.style.background = 'var(--surface2)';
+    e.style.border = '1px solid var(--border)';
+  });
+  el.style.background = 'var(--accent)';
+  el.style.border = 'none';
+  // Live preview
+  document.getElementById('appAvatar').textContent = emoji;
+}
+
+// COLOR SELECTOR
+var selectedColor = '#0078d4';
+function selectColor(el, color){
+  selectedColor = color;
+  document.querySelectorAll('.color-opt').forEach(function(e){
+    e.style.border = '3px solid transparent';
+  });
+  if(el) el.style.border = '3px solid #fff';
+  // Apply color live
+  applyColor(color);
+}
+
+function applyColor(color){
+  var style = document.getElementById('dynamicColorStyle');
+  if(!style){
+    style = document.createElement('style');
+    style.id = 'dynamicColorStyle';
+    document.head.appendChild(style);
+  }
+  style.textContent = ':root { --accent: '+color+'; }';
+}
+
+// SAVE PERSONNALISATION
+function savePerso(){
+  var name = document.getElementById('cfgBizName').value.trim();
+  var slogan = document.getElementById('cfgSlogan').value.trim();
+  var welcome = document.getElementById('cfgWelcome').value.trim();
+  var langPrimary = document.getElementById('cfgLang').value;
+
+  if(name){
+    BIZ_NAME = name;
+    document.getElementById('appTitle').textContent = name;
+  }
+  if(selectedEmoji){
+    document.getElementById('appAvatar').textContent = selectedEmoji;
+  }
+  if(slogan){
+    document.getElementById('appSub').innerHTML = '<span class="dot-online"></span>' + slogan;
+  }
+  if(langPrimary){
+    setLang(langPrimary);
+  }
+  applyColor(selectedColor);
+
+  // Save to localStorage
+  var cfg = {name:BIZ_NAME, emoji:selectedEmoji, color:selectedColor, slogan:slogan, welcome:welcome, lang:langPrimary};
+  try{ localStorage.setItem('qb_config', JSON.stringify(cfg)); }catch(e){}
+
+  showToast('✅ Personnalisation appliquée!');
+  setTimeout(function(){ toggleModal(); }, 1000);
+}
+
+// LOAD SAVED CONFIG
+function loadSavedConfig(){
+  try{
+    var saved = localStorage.getItem('qb_config');
+    if(saved){
+      var cfg = JSON.parse(saved);
+      if(cfg.name){ BIZ_NAME = cfg.name; document.getElementById('appTitle').textContent = cfg.name; document.getElementById('cfgBizName').value = cfg.name; }
+      if(cfg.emoji){ selectedEmoji = cfg.emoji; document.getElementById('appAvatar').textContent = cfg.emoji; }
+      if(cfg.color){ selectedColor = cfg.color; applyColor(cfg.color); }
+      if(cfg.slogan){ document.getElementById('cfgSlogan').value = cfg.slogan; document.getElementById('appSub').innerHTML = '<span class="dot-online"></span>' + cfg.slogan; }
+      if(cfg.lang){ document.getElementById('cfgLang').value = cfg.lang; }
+    }
+  }catch(e){}
+}
+
+function saveConfig(){
+  AZURE_KEY = document.getElementById('cfgKey').value.trim();
+  AZURE_ENDPOINT = document.getElementById('cfgEndpoint').value.trim().replace(/\/openai\/.*$/,'');
+  AZURE_MODEL = document.getElementById('cfgModel').value.trim() || 'gpt-5.4-mini';
+  var st = document.getElementById('modalStatus');
+  if(AZURE_KEY && AZURE_ENDPOINT){
+    azureOK = true;
+    st.textContent = '✅ Azure connecté!';
+    st.className = 'modal-status ok';
+    try{ localStorage.setItem('qb_azure_key', AZURE_KEY); localStorage.setItem('qb_azure_endpoint', AZURE_ENDPOINT); }catch(e){}
+    showToast('☁️ Azure connecté!');
+    setTimeout(function(){toggleModal();}, 1200);
+  } else {
+    st.textContent = '⚠️ Clé ou endpoint manquant';
+    st.className = 'modal-status err';
+  }
+}
+
+// ═══ TRANSLATIONS ═══
+// NOTE: services are now EMPTY by default — the AI asks the client what they need
+// The pro configures their own services in the dashboard
+var T = {
+  fr:{dir:'ltr',placeholder:'Message...',
+    welcome:'Bonjour! 👋 Je suis l\'assistant **{biz}**.\n\nComment puis-je vous aider aujourd\'hui?',
+    askService:'Quel service vous intéresse? Décrivez ce dont vous avez besoin — je m\'adapte à tout! 😊',
+    askName:'Parfait! Pour continuer, quel est votre prénom?',
+    askDate:function(n){return 'Merci '+n+'! Voici les créneaux disponibles:'},
+    confirmAsk:function(s){return 'Confirmer **'+s+'**?\nComment souhaitez-vous recevoir la confirmation?'},
+    confirmModes:['📧 Email','📱 SMS','📧+📱 Les deux'],
+    confirmed:'✅ **RDV confirmé!**\nConfirmation envoyée.\nProfessionnel notifié.\nAjouté au calendrier.',
+    slotLabel:'Dispo',
+    typeHint:'Ou tapez votre besoin ci-dessous →'},
+  en:{dir:'ltr',placeholder:'Message...',
+    welcome:'Hello! 👋 I\'m the **{biz}** assistant.\n\nHow can I help you today?',
+    askService:'What service do you need? Describe what you\'re looking for — I adapt to everything! 😊',
+    askName:'Great! What\'s your first name?',
+    askDate:function(n){return 'Thanks '+n+'! Here are available slots:'},
+    confirmAsk:function(s){return 'Confirm **'+s+'**?\nHow would you like your confirmation?'},
+    confirmModes:['📧 Email','📱 SMS','📧+📱 Both'],
+    confirmed:'✅ **Appointment confirmed!**\nConfirmation sent.\nProfessional notified.\nAdded to calendar.',
+    slotLabel:'Available',
+    typeHint:'Or type your need below →'},
+  es:{dir:'ltr',placeholder:'Mensaje...',
+    welcome:'¡Hola! 👋 Soy el asistente de **{biz}**.\n\n¿En qué puedo ayudarle hoy?',
+    askService:'¿Qué servicio necesita? Describa lo que busca — ¡me adapto a todo! 😊',
+    askName:'¡Perfecto! ¿Cuál es tu nombre?',
+    askDate:function(n){return '¡Gracias '+n+'! Aquí los horarios disponibles:'},
+    confirmAsk:function(s){return '¿Confirmar **'+s+'**?\n¿Cómo desea recibir la confirmación?'},
+    confirmModes:['📧 Email','📱 SMS','📧+📱 Ambos'],
+    confirmed:'✅ **¡Cita confirmada!**\nConfirmación enviada.\nProfesional notificado.\nAgregado al calendario.',
+    slotLabel:'Disponible',
+    typeHint:'O escribe tu necesidad abajo →'},
+  ar:{dir:'rtl',placeholder:'...رسالة',
+    welcome:'مرحباً! 👋 أنا مساعد **{biz}**.\n\nكيف يمكنني مساعدتك اليوم؟',
+    askService:'ما الخدمة التي تحتاجها؟ صف ما تبحث عنه — أتكيف مع كل شيء! 😊',
+    askName:'ممتاز! ما اسمك؟',
+    askDate:function(n){return 'شكراً '+n+'! إليك المواعيد المتاحة:'},
+    confirmAsk:function(s){return 'تأكيد **'+s+'**؟\nكيف تريد استلام التأكيد؟'},
+    confirmModes:['📧 بريد','📱 رسالة','📧+📱 كلاهما'],
+    confirmed:'✅ **تم تأكيد الموعد!**\nتم إرسال التأكيد.\nتم إخطار المختص.\nتمت الإضافة إلى التقويم.',
+    slotLabel:'متاح',
+    typeHint:'أو اكتب احتياجك أدناه →'},
+  pt:{dir:'ltr',placeholder:'Mensagem...',
+    welcome:'Olá! 👋 Sou o assistente de **{biz}**.\n\nComo posso ajudá-lo hoje?',
+    askService:'Qual serviço você precisa? Descreva o que procura — me adapto a tudo! 😊',
+    askName:'Ótimo! Qual é o seu nome?',
+    askDate:function(n){return 'Obrigado '+n+'! Aqui estão os horários disponíveis:'},
+    confirmAsk:function(s){return 'Confirmar **'+s+'**?\nComo deseja receber a confirmação?'},
+    confirmModes:['📧 Email','📱 SMS','📧+📱 Ambos'],
+    confirmed:'✅ **Consulta confirmada!**\nConfirmação enviada.\nProfissional notificado.\nAdicionado ao calendário.',
+    slotLabel:'Disponível',
+    typeHint:'Ou descreva sua necessidade abaixo →'},
+  zh:{dir:'ltr',placeholder:'发送消息...',
+    welcome:'您好！👋 我是**{biz}**的助手。\n\n今天我能帮您什么？',
+    askService:'您需要什么服务？描述您的需求——我可以适应一切！😊',
+    askName:'好的！您的名字是什么？',
+    askDate:function(n){return '谢谢'+n+'！以下是可用时间段：'},
+    confirmAsk:function(s){return '确认**'+s+'**？\n您希望如何接收确认？'},
+    confirmModes:['📧 邮件','📱 短信','📧+📱 两者'],
+    confirmed:'✅ **预约已确认！**\n确认已发送。\n专业人员已通知。\n已添加到日历。',
+    slotLabel:'可用',
+    typeHint:'或在下方描述您的需求 →'},
+  de:{dir:'ltr',placeholder:'Nachricht...',
+    welcome:'Hallo! 👋 Ich bin der Assistent von **{biz}**.\n\nWie kann ich Ihnen heute helfen?',
+    askService:'Welchen Service benötigen Sie? Beschreiben Sie Ihren Bedarf — ich passe mich allem an! 😊',
+    askName:'Gut! Wie ist Ihr Vorname?',
+    askDate:function(n){return 'Danke '+n+'! Hier sind die verfügbaren Termine:'},
+    confirmAsk:function(s){return 'Termin **'+s+'** bestätigen?\nWie möchten Sie die Bestätigung erhalten?'},
+    confirmModes:['📧 E-Mail','📱 SMS','📧+📱 Beides'],
+    confirmed:'✅ **Termin bestätigt!**\nBestätigung gesendet.\nFachmann benachrichtigt.\nZum Kalender hinzugefügt.',
+    slotLabel:'Verfügbar',
+    typeHint:'Oder beschreiben Sie Ihren Bedarf unten →'},
+  hi:{dir:'ltr',placeholder:'संदेश...',
+    welcome:'नमस्ते! 👋 मैं **{biz}** का असिस्टेंट हूं।\n\nआज मैं आपकी कैसे मदद कर सकता हूं?',
+    askService:'आपको कौन सी सेवा चाहिए? बताएं क्या चाहिए — मैं सब कुछ के लिए अनुकूल हूं! 😊',
+    askName:'बढ़िया! आपका नाम क्या है?',
+    askDate:function(n){return 'धन्यवाद '+n+'! यहाँ उपलब्ध समय स्लॉट हैं:'},
+    confirmAsk:function(s){return '**'+s+'** की पुष्टि करें?\nपुष्टि कैसे प्राप्त करना चाहते हैं?'},
+    confirmModes:['📧 ईमेल','📱 SMS','📧+📱 दोनों'],
+    confirmed:'✅ **अपॉइंटमेंट की पुष्टि!**\nपुष्टि भेजी गई।\nपेशेवर को सूचित किया गया।\nकैलेंडर में जोड़ा गया।',
+    slotLabel:'उपलब्ध',
+    typeHint:'या नीचे अपनी जरूरत टाइप करें →'}
+};
+
+// ═══ STATE ═══
+var lang='fr', t=T.fr, step='service';
+var clientName='', selectedService='', selectedSlot='';
+var chatHistory=[], warningCount=0;
+
+// ═══ LANG ═══
+function setLang(code){
+  lang=code; t=T[code]||T.fr;
+  document.documentElement.lang=code;
+  document.documentElement.dir=t.dir;
+  document.body.dir=t.dir;
+  document.getElementById('chatInput').placeholder=t.placeholder;
+  document.querySelectorAll('.lang-pill').forEach(function(b){b.classList.remove('active');});
+  var pill = document.querySelector('.lang-pill[onclick="setLang(\''+code+'\')"]');
+  if(pill) pill.classList.add('active');
+  step='service'; clientName=''; selectedService=''; selectedSlot=''; chatHistory=[];
+  document.getElementById('messages').innerHTML='';
+  setTimeout(function(){botMsg(getWelcome(), buildServiceButtons());}, 300);
+}
+
+function getWelcome(){
+  return t.welcome.replace('{biz}', BIZ_NAME);
+}
+
+// ═══ SERVICE BUTTONS — dynamic from dashboard config ═══
+// If BIZ_SERVICES is empty (not configured), show text input only
+// If configured by pro, show their custom services as buttons
+function buildServiceButtons(){
+  // Interface is neutral — AI handles everything in background
+  // Pro can optionally configure services in dashboard
+  if(BIZ_SERVICES.length === 0) return '';
+  var html = '<div class="quick-replies">';
+  BIZ_SERVICES.forEach(function(s){
+    html += '<button class="qr-btn" onclick="pickService(\''+s+'\')">' + s + '</button>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function submitCustomService(){
+  var val = document.getElementById('chatInput');
+  if(val && val.value.trim()) pickService(val.value.trim());
+}
+
+function submitCustomService(){
+  var val = document.getElementById('serviceInput');
+  if(val && val.value.trim()){
+    pickService(val.value.trim());
+  }
+}
+
+function pickService(s){
+  selectedService=s; step='name';
+  setTimeout(function(){botMsg(t.askName);}, 700);
+}
+
+function buildSlots(){
+  var now=new Date(), slots=[], times=['09:00','10:30','13:00','14:30','16:00'];
+  var dns={fr:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    es:['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],ar:['أح','إث','ثل','أر','خم','جم','سب'],
+    pt:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],zh:['日','一','二','三','四','五','六'],
+    de:['So','Mo','Di','Mi','Do','Fr','Sa'],hi:['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि']};
+  for(var d=1;d<=7;d++){
+    var day=new Date(now); day.setDate(now.getDate()+d);
+    if(day.getDay()===0||day.getDay()===6) continue;
+    var dn=(dns[lang]||dns.fr)[day.getDay()];
+    var time=times[Math.floor(Math.random()*times.length)];
+    slots.push({label:dn+' '+day.getDate()+'/'+(day.getMonth()+1)+' · '+time,time:time});
+    if(slots.length===3) break;
+  }
+  return '<div class="slots">'+slots.map(function(s){
+    return '<div class="slot-card" onclick="pickSlot(\''+s.label+'\')">'
+      +'<div><div class="slot-time">'+s.time+'</div><div class="slot-date">'+s.label.split('·')[0].trim()+'</div></div>'
+      +'<span class="slot-badge">'+t.slotLabel+'</span></div>';
+  }).join('')+'</div>';
+}
+
+function pickSlot(s){
+  selectedSlot=s; userMsg(s); step='confirm';
+  var btns='<div class="quick-replies">'+t.confirmModes.map(function(m){
+    return '<button class="qr-btn" onclick="pickConfirm(\''+m+'\')">'+m+'</button>';
+  }).join('')+'</div>';
+  setTimeout(function(){botMsg(t.confirmAsk(s),btns);}, 700);
+}
+
+function pickConfirm(m){
+  userMsg(m); step='done';
+  var card='<div class="confirm-card">'
+    +'<div class="confirm-title">🎉 '+selectedService+'</div>'
+    +'<div class="confirm-row"><span>👤</span><span>'+clientName+'</span></div>'
+    +'<div class="confirm-row"><span>🕐</span><span>'+selectedSlot+'</span></div>'
+    +'<div class="confirm-row"><span>📬</span><span>'+m+'</span></div>'
+    +'<div class="confirm-row"><span>📅</span><span style="color:var(--green)">Google + Outlook ✓</span></div>'
+    +'</div>';
+  setTimeout(function(){
+    botMsg(t.confirmed,card);
+    showToast('📅 Calendrier mis à jour!');
+    setTimeout(function(){showToast('📧 Email + SMS envoyés!');},2000);
+  },900);
+}
+
+// ═══ AI CHAT ═══
+async function callAI(text){
+  var sys = 'Tu es l\'assistant IA de "'+BIZ_NAME+'". '
+    +'Tu aides les clients à prendre rendez-vous pour N\'IMPORTE quel service — plombier, médecin, coiffeur, jardinier, tuteur, mécanicien, photographe, ou tout autre professionnel. '
+    +'Réponds toujours dans la langue du client. '
+    +'Étape actuelle: '+step+'. Client: '+(clientName||'inconnu')+'. Service demandé: '+(selectedService||'aucun')+'. '
+    +'Sois concis, chaleureux et efficace.';
+  if(azureOK){
+    // Try chat/completions first (works for most models)
+    var url=AZURE_ENDPOINT+'/openai/deployments/'+AZURE_MODEL+'/chat/completions?api-version=2025-01-01-preview';
+    var body={messages:[{role:'system',content:sys},...chatHistory.slice(-6),{role:'user',content:text}],max_tokens:300,temperature:0.7};
+    var res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','api-key':AZURE_KEY},
+      body:JSON.stringify(body)});
+    if(!res.ok){
+      var errData=await res.json();
+      // If chat/completions fails, try responses API for newer models
+      if(res.status===404||res.status===400){
+        var url2=AZURE_ENDPOINT+'/openai/deployments/'+AZURE_MODEL+'/chat/completions?api-version=2024-12-01-preview';
+        var res2=await fetch(url2,{method:'POST',headers:{'Content-Type':'application/json','api-key':AZURE_KEY},
+          body:JSON.stringify(body)});
+        if(!res2.ok){var e2=await res2.json();throw new Error(e2.error?.message||'HTTP '+res2.status);}
+        var d2=await res2.json(); return d2.choices[0].message.content;
+      }
+      throw new Error(errData.error?.message||'HTTP '+res.status);
+    }
+    var d=await res.json(); return d.choices[0].message.content;
+  } else {
+    var res2=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
+        system:sys,messages:[...chatHistory.slice(-6),{role:'user',content:text}]})});
+    var d2=await res2.json(); return d2.content?.[0]?.text||'...';
+  }
+}
+
+async function sendMessage(){
+  var inp=document.getElementById('chatInput');
+  var text=inp.value.trim(); if(!text) return;
+  inp.value=''; inp.style.height=''; userMsg(text);
+  chatHistory.push({role:'user',content:text});
+  if(step==='service'){
+    pickService(text);
+    return;
+  }
+  if(step==='name'){
+    clientName=text.split(' ')[0]; step='date';
+    setTimeout(function(){botMsg(t.askDate(clientName),buildSlots());},800);
+    return;
+  }
+  document.getElementById('sendBtn').disabled=true;
+  showTyping();
+  try{
+    var r=await callAI(text);
+    chatHistory.push({role:'assistant',content:r});
+    hideTyping();
+    var el=document.createElement('div'); el.className='msg bot';
+    el.innerHTML='<div class="msg-av">⚡</div><div class="bubble">'+r.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')+'</div>';
+    document.getElementById('messages').appendChild(el);
+    scroll();
+  }catch(e){hideTyping();botMsg('❌ '+e.message);}
+  finally{document.getElementById('sendBtn').disabled=false;}
+}
+
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,80)+'px';}
+
+// ═══ MESSAGES ═══
+var typEl=null;
+function showTyping(){
+  var m=document.getElementById('messages');
+  typEl=document.createElement('div'); typEl.className='msg bot';
+  typEl.innerHTML='<div class="msg-av">⚡</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  m.appendChild(typEl); scroll();
+}
+function hideTyping(){if(typEl){typEl.remove();typEl=null;}}
+function botMsg(text,extra){
+  extra=extra||'';
+  showTyping();
+  setTimeout(function(){
+    hideTyping();
+    var el=document.createElement('div'); el.className='msg bot';
+    var fmt=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+    el.innerHTML='<div class="msg-av">⚡</div><div><div class="bubble">'+fmt+'</div>'+extra+'</div>';
+    document.getElementById('messages').appendChild(el); scroll();
+    chatHistory.push({role:'assistant',content:text});
+  },750);
+}
+function userMsg(text){
+  var el=document.createElement('div'); el.className='msg user';
+  el.innerHTML='<div><div class="bubble">'+text+'</div></div><div class="msg-av">👤</div>';
+  document.getElementById('messages').appendChild(el); scroll();
+}
+function scroll(){var m=document.getElementById('messages');m.scrollTop=m.scrollHeight;}
+
+// ═══ TOAST ═══
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2800);
+}
+
+// ═══ CLOCK ═══
+function updateClock(){var n=new Date();document.getElementById('clock').textContent=n.getHours()+':'+String(n.getMinutes()).padStart(2,'0');}
+updateClock(); setInterval(updateClock,30000);
+
+// ═══ INIT ═══
+loadSavedConfig();
+// Load Azure from localStorage if available
+try{
+  var savedKey = localStorage.getItem('qb_azure_key');
+  var savedEndpoint = localStorage.getItem('qb_azure_endpoint');
+  if(savedKey && AZURE_KEY === 'METS_TA_CLE_ICI'){ AZURE_KEY = savedKey; }
+  if(savedEndpoint){ AZURE_ENDPOINT = savedEndpoint; }
+  azureOK = (AZURE_KEY !== 'METS_TA_CLE_ICI' && AZURE_KEY !== '');
+}catch(e){}
+setTimeout(function(){botMsg(getWelcome(),buildServiceButtons());},500);
+</script>
+</body>
+</html>
